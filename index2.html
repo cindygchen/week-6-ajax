@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>NOMS</title>
+  <style type="text/css">
+    button,
+    div,
+    form,
+    input {
+      margin: 10px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+    <h1>Food Search</h1>
+
+    <!-- Rendered buttons will get added here  -->
+    <div id="buttons-view"></div>
+
+    <form id="food-form">
+      <label for="food-input">Add a food!</label>
+      <input type="text" id="food-input"><br>
+
+      <!-- Button triggers new food to be added -->
+      <input id="add-food" type="submit" value="Add a food!">
+    </form>
+
+    <!-- food will get dumped dere -->
+    <div id="foods-view"></div>
+
+    <script src="http://code.jquery.com/jquery-2.1.3.min.js"></script>
+    <script type="text/javascript">
+      // Initial array of food
+      var foods = ["Tacos", "Ice Cream", "Burgers", "Salad"];
+
+      // displayFoodInfo function re-renders the HTML to display the appropriate content
+      function displayFoodInfo() {
+
+        var food = $(this).attr("data-name");
+        var queryURL = "http://api.giphy.com/v1/gifs/search?q=" + food + "&api_key=dc6zaTOxFJmzC&limit=10";
+
+        // Creating an AJAX call for the specific movie button being clicked
+        $.ajax({
+          url: queryURL,
+          method: "GET"
+        }).done(function(response) {
+          console.log(response);
+
+          // Creating a div to hold the food
+          var foodDiv = $("<div class='food'>");
+
+          // Storing the rating data
+          var rating = response.Rated;
+
+          // Creating an element to have the rating displayed
+          var pOne = $("<p>").text("Rating: " + rating);
+
+          // Displaying the rating
+          foodDiv.append(pOne);
+
+          // Putting the entire movie above the previous movies
+          $("#foods-view").prepend(foodiv);
+        });
+
+      }
+
+      // Function for displaying food data
+      function renderButtons() {
+
+        // Deleting the foods prior to adding new movies
+        // (this is necessary otherwise you will have repeat buttons)
+        $("#buttons-view").empty();
+
+        // Looping through the array of food
+        for (var i = 0; i < foods.length; i++) {
+
+          // Then dynamicaly generating buttons for each food in the array
+          // This code $("<button>") is all jQuery needs to create the beginning and end tag. (<button></button>)
+          var a = $("<button>");
+          // Adding a class of food to our button
+          a.addClass("food");
+          // Adding a data-attribute
+          a.attr("data-name", foods[i]);
+          // Providing the initial button text
+          a.text(foods[i]);
+          // Adding the button to the buttons-view div
+          $("#buttons-view").append(a);
+        }
+      }
+
+      // This function handles events where a movie button is clicked
+      $("#add-food").on("click", function(event) {
+        event.preventDefault();
+        // This line grabs the input from the textbox
+        var food = $("#food-input").val().trim();
+
+        // Adding movie from the textbox to our array
+        foods.push(food);
+
+        // Calling renderButtons which handles the processing of our movie array
+        renderButtons();
+      });
+
+      // Adding a click event listener to all elements with a class of "food"
+      $(document).on("click", ".food", displayFoodInfo);
+
+      // Calling the renderButtons function to display the intial buttons
+      renderButtons();
+    </script>
+  </div>
+</body>
+
+</html>
